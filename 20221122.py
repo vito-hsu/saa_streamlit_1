@@ -3,10 +3,10 @@ import pandas as pd
 
 st.title('SAA Small System')
 st.header('目標')
-st.subheader('幫助迅得工令處理人員依照常見需求, 快速整理表單, 並提供結果表單線上瀏覽與下載服務. ')
+st.subheader('協助迅得工令處理人員依需求快速整理表單, 並提供結果表單線上瀏覽與下載服務. ')
 
 st.header('規劃')
-st.subheader('提供多種常見資料整合方法(Ex. concate, join, merge...), 供使用者快速檢視多筆資料之關聯. (以下 Demo 兩筆資料源與 3 種處理方法藉以說明)')
+st.subheader('預計提供多種常見資料整合方法(Ex. concate, join, merge...), 供使用者快速檢視多筆資料之關聯.')
 
 ########################################
 
@@ -51,7 +51,7 @@ st.caption('shape:'+str(data2.shape))
 st.header('結果')
 st.subheader('Data3 (Result1)')
 # data3 = pd.merge(data1, data2, left_on="工令", right_on="工令")
-st.markdown('#####  法1. 以Concat方式連接兩table, 將兩table快速合併成一檔案, 不按某欄位連接')
+st.markdown('#####  法1. 將兩table快速合併成一檔案, 不按某欄位連接')
 data3 = pd.concat([data1, data2], join="outer")
 st.dataframe(data3)
 st.caption('shape:'+str(data3.shape))
