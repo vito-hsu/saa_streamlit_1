@@ -1,85 +1,116 @@
 import streamlit as st
 import pandas as pd
 
-st.title('SAA Small System')
-st.header('目標')
-st.subheader('協助迅得工令處理人員依需求快速整理表單, 並提供結果表單線上瀏覽與下載服務. ')
 
-st.header('規劃')
-st.subheader('預計提供多種常見資料整合方法(Ex. concate, join, merge...), 供使用者快速檢視多筆資料之關聯.')
+
+# Using object notation
+add_selectbox = st.sidebar.selectbox(
+    "Mode",
+    ("Two Tables", "Brief Introduction")
+)
+
+# Using "with" notation
+# with st.sidebar:
+#     add_radio = st.radio(
+#         "Choose a shipping method",
+#         ("Standard (5-15 days)", "Express (2-5 days)")
+#     )
+
+# import time
+# with st.sidebar:
+#     with st.echo():
+#         st.write("This code will be printed to the sidebar.")
+
+#     with st.spinner("Loading..."):
+#         time.sleep(5)
+#     st.success("Done!")
+
+
 
 ########################################
 
+if add_selectbox == 'Two Tables':
+    st.header('資料源')
+    tab4, tab5 = st.tabs(["資料1", "資料2"])
+    with tab4:
+        st.subheader('Data1 (UserData1)')
+        uploaded_file = st.file_uploader("Choose your first file")
+        if st.checkbox('Data1 是否含 sheet name'):                                                                      # l1 = st.text_input(label='請輸入檔案一(YU)的絕對位置:', value=r'', placeholder=r'C:\Users\user\Desktop\excel_join_20221122/YM管制表 - 俊鴻.xlsx')
+            s1 = st.text_input(label='請輸入檔案一(YU)的sheet name:', value=None, placeholder='若無，則不需填此欄位')   # data1 = pd.read_excel(io=l1, sheet_name=s1)     # data1.columns.values[0]
+            if uploaded_file is not None:
+                data1 = pd.read_excel(io=uploaded_file, sheet_name=s1)                                                                    
+        else:
+            if uploaded_file is not None:                                                                               # l1 = st.text_input(label='請輸入檔案一(YU)的絕對位置:', value=r'', placeholder=r'C:\Users\user\Desktop\excel_join_20221122/YM管制表 - 俊鴻.xlsx')
+                data1 = pd.read_excel(io=uploaded_file)                                                                 # data1 = pd.read_excel(io=l1) 
+        data1.columns = [i.replace('\n','') for i in data1.columns.values]                                              # 刪除有enter命名的欄位
+        st.dataframe(data1)
+        st.caption('shape:'+str(data1.shape))
 
 
-st.header('資料源')
-st.subheader('Data1 (UserData1)')
-uploaded_file = st.file_uploader("Choose your first file")
-if st.checkbox('Data1 是否含 sheet name'):                                                                      # l1 = st.text_input(label='請輸入檔案一(YU)的絕對位置:', value=r'', placeholder=r'C:\Users\user\Desktop\excel_join_20221122/YM管制表 - 俊鴻.xlsx')
-    s1 = st.text_input(label='請輸入檔案一(YU)的sheet name:', value=None, placeholder='若無，則不需填此欄位')   # data1 = pd.read_excel(io=l1, sheet_name=s1)     # data1.columns.values[0]
-    if uploaded_file is not None:
-        data1 = pd.read_excel(io=uploaded_file, sheet_name=s1)                                                                    
+    with tab5:
+        st.subheader('Data2 (UserData2)')
+        uploaded_file2 = st.file_uploader("Choose your second file")
+        if st.checkbox('Data2 是否含 sheet name'):                                                                                  # l2 = st.text_input(label='請輸入檔案二(Tracy)的絕對位置:', value=r'', placeholder=r'C:\Users\user\Desktop\excel_join_20221122/YM廠機台物料未完全安裝表20221121 - Tracy.xlsx')
+            s2 = st.text_input(label='請輸入檔案二(Tracy)的sheet name:', value='20221121更新', placeholder='若無，則不需填此欄位')  # data2 = pd.read_excel(io=l2, sheet_name=s2)                                                                     # data1.columns.values[0]
+            if uploaded_file2 is not None:
+                data2 = pd.read_excel(io=uploaded_file2, sheet_name=s2)  
+        else:
+            if uploaded_file2 is not None:                                                                                          # l2 = st.text_input(label='請輸入檔案二(Tracy)的絕對位置:', value=r'', placeholder=r'C:\Users\user\Desktop\excel_join_20221122/YM廠機台物料未完全安裝表20221121 - Tracy.xlsx')
+                data2 = pd.read_excel(io=uploaded_file2)                                                                            # data2 = pd.read_excel(io=l2)  
+        data2.columns = [i.replace('\n','') for i in data2.columns.values]                                                          # 刪除有enter命名的欄位
+        st.dataframe(data2)
+        st.caption('shape:'+str(data2.shape))
+
+
+
+
+    ########################################
+    ########################################
+
+    st.header('結果')
+    tab1, tab2, tab3 = st.tabs(["結果1", "結果2", "結果3"])
+
+    with tab1:
+        st.subheader('Data3 (Result1)')
+        # data3 = pd.merge(data1, data2, left_on="工令", right_on="工令")
+        st.markdown('#####  法1. 將兩table快速合併成一檔案, 不按某欄位連接')
+        data3 = pd.concat([data1, data2], join="outer")
+        st.dataframe(data3)
+        st.caption('shape:'+str(data3.shape))
+        if st.button('Save data3 CSV'):
+            data3.to_csv('data3.csv', index=False, encoding="utf_8_sig")     #繁體中文記得要加utf_8_sig
+
+    with tab2:
+        st.subheader('Data4 (Result2)')
+        st.markdown('#####  法2. 以Full Join方式連接兩table, 兩table按某欄位為準')
+        a1 = st.text_input(label='請輸入第一個待合併的欄位名稱', value='工令')
+        data4 = pd.merge(data1, data2, on=a1, how='outer')
+        st.dataframe(data4)
+        st.caption('shape:'+str(data4.shape))
+        if st.button('Save data4 CSV'):
+            data4.to_csv('data4.csv', index=False, encoding="utf_8_sig")     #繁體中文記得要加utf_8_sig
+
+    with tab3:
+        st.subheader('Data5 (Result3)')
+        st.markdown('#####  法3. 和法2差異在合併時, 依據之欄位數由1個提升至2個')
+        a2 = st.text_input(label='請輸入第二個待合併的欄位名稱', value='機型')
+        data5 = data1.join(data2.set_index([a1, a2]), on = [a1, a2], how="outer", lsuffix='_l', rsuffix='_r')
+        st.dataframe(data5)
+        st.caption('shape:'+str(data5.shape))
+        if st.button('Save data5 CSV'):
+            data5.to_csv('data5.csv', index=False, encoding="utf_8_sig")     #繁體中文記得要加utf_8_sig
+
 else:
-    if uploaded_file is not None:                                                                               # l1 = st.text_input(label='請輸入檔案一(YU)的絕對位置:', value=r'', placeholder=r'C:\Users\user\Desktop\excel_join_20221122/YM管制表 - 俊鴻.xlsx')
-        data1 = pd.read_excel(io=uploaded_file)                                                                 # data1 = pd.read_excel(io=l1) 
-data1.columns = [i.replace('\n','') for i in data1.columns.values]                                              # 刪除有enter命名的欄位
-st.dataframe(data1)
-st.caption('shape:'+str(data1.shape))
+    st.title('SAA Small System')
+    st.header('目標')
+    st.subheader('協助迅得工令處理人員依需求快速整理表單, 並提供結果表單線上瀏覽與下載服務. ')
+
+    st.header('規劃')
+    st.subheader('預計提供多種常見資料整合方法(Ex. concate, join, merge...), 供使用者快速檢視多筆資料之關聯.')
 
 
 
-st.subheader('Data2 (UserData2)')
-uploaded_file2 = st.file_uploader("Choose your second file")
-if st.checkbox('Data2 是否含 sheet name'):                                                                                  # l2 = st.text_input(label='請輸入檔案二(Tracy)的絕對位置:', value=r'', placeholder=r'C:\Users\user\Desktop\excel_join_20221122/YM廠機台物料未完全安裝表20221121 - Tracy.xlsx')
-    s2 = st.text_input(label='請輸入檔案二(Tracy)的sheet name:', value='20221121更新', placeholder='若無，則不需填此欄位')  # data2 = pd.read_excel(io=l2, sheet_name=s2)                                                                     # data1.columns.values[0]
-    if uploaded_file2 is not None:
-        data2 = pd.read_excel(io=uploaded_file2, sheet_name=s2)  
-else:
-    if uploaded_file2 is not None:                                                                                          # l2 = st.text_input(label='請輸入檔案二(Tracy)的絕對位置:', value=r'', placeholder=r'C:\Users\user\Desktop\excel_join_20221122/YM廠機台物料未完全安裝表20221121 - Tracy.xlsx')
-        data2 = pd.read_excel(io=uploaded_file2)                                                                            # data2 = pd.read_excel(io=l2)  
-data2.columns = [i.replace('\n','') for i in data2.columns.values]                                                          # 刪除有enter命名的欄位
-st.dataframe(data2)
-st.caption('shape:'+str(data2.shape))
-
-
-
-
-########################################
-########################################
-
-
-st.header('結果')
-st.subheader('Data3 (Result1)')
-# data3 = pd.merge(data1, data2, left_on="工令", right_on="工令")
-st.markdown('#####  法1. 將兩table快速合併成一檔案, 不按某欄位連接')
-data3 = pd.concat([data1, data2], join="outer")
-st.dataframe(data3)
-st.caption('shape:'+str(data3.shape))
-if st.button('Save data3 CSV'):
-    data3.to_csv('data3.csv', index=False, encoding="utf_8_sig")     #繁體中文記得要加utf_8_sig
-
-
-
-st.subheader('Data4 (Result2)')
-st.markdown('#####  法2. 以Full Join方式連接兩table, 兩table按某欄位為準')
-a1 = st.text_input(label='請輸入第一個待合併的欄位名稱', value='工令')
-data4 = pd.merge(data1, data2, on=a1, how='outer')
-st.dataframe(data4)
-st.caption('shape:'+str(data4.shape))
-if st.button('Save data4 CSV'):
-    data4.to_csv('data4.csv', index=False, encoding="utf_8_sig")     #繁體中文記得要加utf_8_sig
-
-
-
-
-st.subheader('Data5 (Result3)')
-st.markdown('#####  法3. 和法2差異在合併時, 依據之欄位數由1個提升至2個')
-a2 = st.text_input(label='請輸入第二個待合併的欄位名稱', value='機型')
-data5 = data1.join(data2.set_index([a1, a2]), on = [a1, a2], how="outer", lsuffix='_l', rsuffix='_r')
-st.dataframe(data5)
-st.caption('shape:'+str(data5.shape))
-if st.button('Save data5 CSV'):
-    data5.to_csv('data5.csv', index=False, encoding="utf_8_sig")     #繁體中文記得要加utf_8_sig
+    ########################################
 
 
 
