@@ -5,7 +5,7 @@ st.set_page_config(
     page_title="SAA EXCEL APP",
     page_icon="🦠",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
     # menu_items={
     #     'Get Help': 'https://www.extremelycoolapp.com/help',
     #     'Report a bug': "https://www.extremelycoolapp.com/bug",
@@ -40,37 +40,39 @@ add_selectbox = st.sidebar.selectbox(
 ########################################
 
 if add_selectbox == 'Two Tables':
-    st.header('資料源')
-    tab4, tab5 = st.tabs(["資料1", "資料2"])
-    with tab4:
-        st.subheader('Data1 (UserData1)')
-        uploaded_file = st.file_uploader("Choose your first file")
-        if st.checkbox('Data1 是否含 sheet name'):                                                                      # l1 = st.text_input(label='請輸入檔案一(YU)的絕對位置:', value=r'', placeholder=r'C:\Users\user\Desktop\excel_join_20221122/YM管制表 - 俊鴻.xlsx')
-            s1 = st.text_input(label='請輸入檔案一(YU)的sheet name:', value=None, placeholder='若無，則不需填此欄位')   # data1 = pd.read_excel(io=l1, sheet_name=s1)     # data1.columns.values[0]
-            if uploaded_file is not None:
-                data1 = pd.read_excel(io=uploaded_file, sheet_name=s1)                                                                    
-        else:
-            if uploaded_file is not None:                                                                               # l1 = st.text_input(label='請輸入檔案一(YU)的絕對位置:', value=r'', placeholder=r'C:\Users\user\Desktop\excel_join_20221122/YM管制表 - 俊鴻.xlsx')
-                data1 = pd.read_excel(io=uploaded_file)                                                                 # data1 = pd.read_excel(io=l1) 
-        data1.columns = [i.replace('\n','') for i in data1.columns.values]                                              # 刪除有enter命名的欄位
-        st.dataframe(data1)
-        st.caption('shape:'+str(data1.shape))
+    try:
+        st.header('資料源')
+        tab4, tab5 = st.tabs(["資料1", "資料2"])
+        with tab4:
+            st.subheader('Data1 (UserData1)')
+            uploaded_file = st.file_uploader("Choose your first file")
+            if st.checkbox('Data1 是否含 sheet name'):                                                                      # l1 = st.text_input(label='請輸入檔案一(YU)的絕對位置:', value=r'', placeholder=r'C:\Users\user\Desktop\excel_join_20221122/YM管制表 - 俊鴻.xlsx')
+                s1 = st.text_input(label='請輸入檔案一(YU)的sheet name:', value=None, placeholder='若無，則不需填此欄位')   # data1 = pd.read_excel(io=l1, sheet_name=s1)     # data1.columns.values[0]
+                if uploaded_file is not None:
+                    data1 = pd.read_excel(io=uploaded_file, sheet_name=s1)                                                                    
+            else:
+                if uploaded_file is not None:                                                                               # l1 = st.text_input(label='請輸入檔案一(YU)的絕對位置:', value=r'', placeholder=r'C:\Users\user\Desktop\excel_join_20221122/YM管制表 - 俊鴻.xlsx')
+                    data1 = pd.read_excel(io=uploaded_file)                                                                 # data1 = pd.read_excel(io=l1) 
+            data1.columns = [i.replace('\n','') for i in data1.columns.values]                                              # 刪除有enter命名的欄位
+            st.dataframe(data1)
+            st.caption('shape:'+str(data1.shape))
 
 
-    with tab5:
-        st.subheader('Data2 (UserData2)')
-        uploaded_file2 = st.file_uploader("Choose your second file")
-        if st.checkbox('Data2 是否含 sheet name'):                                                                                  # l2 = st.text_input(label='請輸入檔案二(Tracy)的絕對位置:', value=r'', placeholder=r'C:\Users\user\Desktop\excel_join_20221122/YM廠機台物料未完全安裝表20221121 - Tracy.xlsx')
-            s2 = st.text_input(label='請輸入檔案二(Tracy)的sheet name:', value='20221121更新', placeholder='若無，則不需填此欄位')  # data2 = pd.read_excel(io=l2, sheet_name=s2)                                                                     # data1.columns.values[0]
-            if uploaded_file2 is not None:
-                data2 = pd.read_excel(io=uploaded_file2, sheet_name=s2)  
-        else:
-            if uploaded_file2 is not None:                                                                                          # l2 = st.text_input(label='請輸入檔案二(Tracy)的絕對位置:', value=r'', placeholder=r'C:\Users\user\Desktop\excel_join_20221122/YM廠機台物料未完全安裝表20221121 - Tracy.xlsx')
-                data2 = pd.read_excel(io=uploaded_file2)                                                                            # data2 = pd.read_excel(io=l2)  
-        data2.columns = [i.replace('\n','') for i in data2.columns.values]                                                          # 刪除有enter命名的欄位
-        st.dataframe(data2)
-        st.caption('shape:'+str(data2.shape))
-
+        with tab5:
+            st.subheader('Data2 (UserData2)')
+            uploaded_file2 = st.file_uploader("Choose your second file")
+            if st.checkbox('Data2 是否含 sheet name'):                                                                                  # l2 = st.text_input(label='請輸入檔案二(Tracy)的絕對位置:', value=r'', placeholder=r'C:\Users\user\Desktop\excel_join_20221122/YM廠機台物料未完全安裝表20221121 - Tracy.xlsx')
+                s2 = st.text_input(label='請輸入檔案二(Tracy)的sheet name:', value='20221121更新', placeholder='若無，則不需填此欄位')  # data2 = pd.read_excel(io=l2, sheet_name=s2)                                                                     # data1.columns.values[0]
+                if uploaded_file2 is not None:
+                    data2 = pd.read_excel(io=uploaded_file2, sheet_name=s2)  
+            else:
+                if uploaded_file2 is not None:                                                                                          # l2 = st.text_input(label='請輸入檔案二(Tracy)的絕對位置:', value=r'', placeholder=r'C:\Users\user\Desktop\excel_join_20221122/YM廠機台物料未完全安裝表20221121 - Tracy.xlsx')
+                    data2 = pd.read_excel(io=uploaded_file2)                                                                            # data2 = pd.read_excel(io=l2)  
+            data2.columns = [i.replace('\n','') for i in data2.columns.values]                                                          # 刪除有enter命名的欄位
+            st.dataframe(data2)
+            st.caption('shape:'+str(data2.shape))
+    except:
+        st.error('請先確認您的兩筆資料 (資料1, 資料2) 是否已正常載入...', icon="🚨")
 
 
 
